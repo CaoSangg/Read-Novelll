@@ -1,6 +1,0 @@
-# File nay da duoc tach va thay the boi 3 workflow moi:
-# - deploy-preview-feature.yaml (Preview khi push len nhanh feature)
-# - pr-ci.yaml (Kiem tra chat luong khi mo Pull Request vao main)
-# - deploy-production.yaml (Trien khai Production khi merge vao main)
-#
-# Ban co the xoa file nay bang lenh: git rm .github/workflows/deploy.yml
