@@ -2,10 +2,15 @@ name: PR Quality Gate & CI Check
 
 on:
   pull_request:
-    branches: [ "main" ]
+    branches: main
+  push:
+    branches:
+      - "feature/**"
+      - "fix/**"
+      - "hotfix/**"
 
 jobs:
-  kiem-tra-chat-luong:
+  pre-check:
     name: Kiem Tra Files & Syntax
     runs-on: ubuntu-latest
     steps:
@@ -19,18 +24,28 @@ jobs:
           test -f reader.html || { echo "Loi: Thieu file reader.html"; exit 1; }
 
           echo "=== Kiem tra cac file anh assets ==="
-          test -f home_image.png || { echo "Loi: Thieu file home_image.png"; exit 1; }
-          test -f sub_image1.png || { echo "Loi: Thieu file sub_image1.png"; exit 1; }
-          test -f sub_image2.png || { echo "Loi: Thieu file sub_image2.png"; exit 1; }
-          test -f sub_image3.png || { echo "Loi: Thieu file sub_image3.png"; exit 1; }
+          # Kiem tra ca thu muc images/ va thu muc goc (de tuong thich linh hoat)
+          (test -f images/home_image.png || test -f home_image.png) || { echo "Loi: Thieu file home_image.png"; exit 1; }
+          (test -f images/sub_image1.png || test -f sub_image1.png) || { echo "Loi: Thieu file sub_image1.png"; exit 1; }
+          (test -f images/sub_image2.png || test -f sub_image2.png) || { echo "Loi: Thieu file sub_image2.png"; exit 1; }
+          (test -f images/sub_image3.png || test -f sub_image3.png) || { echo "Loi: Thieu file sub_image3.png"; exit 1; }
 
           echo "Tat ca file cot loi da day du va hop le!"
 
       - name: Kiem tra cu phap HTML co ban
         run: |
           echo "=== Kiem tra the dong mo co ban tren index va reader ==="
-          grep -q "<!DOCTYPE html>" index.html || { echo "Loi: index.html thieu DOCTYPE"; exit 1; }
-          grep -q "</html>" index.html || { echo "Loi: index.html thieu the dong html"; exit 1; }
-          grep -q "<!DOCTYPE html>" reader.html || { echo "Loi: reader.html thieu DOCTYPE"; exit 1; }
-          grep -q "</html>" reader.html || { echo "Loi: reader.html thieu the dong html"; exit 1; }
+          grep -iq "<!DOCTYPE html>" index.html || { echo "Loi: index.html thieu DOCTYPE"; exit 1; }
+          grep -iq "</html>" index.html || { echo "Loi: index.html thieu the dong html"; exit 1; }
+          grep -iq "<!DOCTYPE html>" reader.html || { echo "Loi: reader.html thieu DOCTYPE"; exit 1; }
+          grep -iq "</html>" reader.html || { echo "Loi: reader.html thieu the dong html"; exit 1; }
           echo "Kiem tra cu phap HTML thanh cong!"
+
+      - name: Xuat ket qua ra Summary
+        if: always()
+        run: |
+          echo "Ket qua CI Quality Gate Check" >> $GITHUB_STEP_SUMMARY
+          echo "- **Trang thai:** ${{ job.status == 'success' && 'Thanh cong' || 'That bai' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Files kiem tra:** \`index.html\`, \`reader.html\`, \`images/home_image.png\`, \`images/sub_image*.png\`" >> $GITHUB_STEP_SUMMARY

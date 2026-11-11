@@ -5,6 +5,10 @@ on:
     branches-ignore:
       - main
 
+concurrency:
+  group: preview-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   deploy-preview:
     name: Deploy Preview len Vercel
@@ -13,7 +17,7 @@ jobs:
       - name: Keo code ve
         uses: actions/checkout@v4
 
-      - name: Cai dat Vercel CLI
+      - name: Cai Vercel CLI
         run: npm install --global vercel@latest
 
       - name: Pull Thong Tin Environment (Preview)
@@ -29,7 +33,18 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Deploy Preview len Vercel
-        run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
+        id: deploy_preview
+        run: |
+          echo "=== Thuc hien deploy preview ==="
+          PREVIEW_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          echo "preview_url=$PREVIEW_URL" >> $GITHUB_OUTPUT
+          
+          # Xuat ket qua ra Summary
+          echo "Vercel Preview Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "- **Trang thai:** Deploy Preview thanh cong" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Preview URL:** [$PREVIEW_URL]($PREVIEW_URL)" >> $GITHUB_STEP_SUMMARY
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
