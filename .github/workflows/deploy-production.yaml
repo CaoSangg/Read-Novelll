@@ -4,15 +4,37 @@ on:
   push:
     branches: [ "main" ]
 
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
 jobs:
+  pre-check:
+    name: CI Pre-check Truoc Khi Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Keo code ve may ao
+        uses: actions/checkout@v4
+
+      - name: Kiem tra su ton tai cua cac file cot loi
+        run: |
+          test -f index.html || { echo "Loi: Thieu file index.html"; exit 1; }
+          test -f reader.html || { echo "Loi: Thieu file reader.html"; exit 1; }
+          (test -f images/home_image.png || test -f home_image.png) || { echo "Loi: Thieu file home_image.png"; exit 1; }
+          grep -iq "<!DOCTYPE html>" index.html || { echo "Loi: index.html thieu DOCTYPE"; exit 1; }
+          grep -iq "</html>" index.html || { echo "Loi: index.html thieu the dong html"; exit 1; }
+          echo "Kiem tra truoc deploy thanh cong!"
+
   deploy-production:
     name: Deploy Len Production
+    needs:
+      - pre-check
     runs-on: ubuntu-latest
     steps:
       - name: Keo code ve
         uses: actions/checkout@v4
 
-      - name: Cai dat Vercel CLI
+      - name: Cai Vercel CLI
         run: npm install --global vercel@latest
 
       - name: Pull Thong Tin Environment (Production)
@@ -28,7 +50,18 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Deploy Artifacts len Production
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        id: deploy_prod
+        run: |
+          echo "=== Thuc hien deploy Production ==="
+          PROD_URL=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          echo "prod_url=$PROD_URL" >> $GITHUB_OUTPUT
+
+          # Xuat ket qua ra Summary
+          echo "Vercel Production Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "- **Trang thai:** Trien khai Production thanh cong" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch:** \`main\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Live URL:** [$PROD_URL]($PROD_URL)" >> $GITHUB_STEP_SUMMARY
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}

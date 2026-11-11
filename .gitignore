@@ -11,6 +11,7 @@ node_modules/
 out/
 build/
 dist/
+.vercel/
 
 # System & OS temp files
 .DS_Store
@@ -27,3 +28,8 @@ Thumbs.db
 
 # File docx
 *.docx
+
+# Kế hoạch dự án nội bộ
+PLAN.md
+plan.pdf
+
