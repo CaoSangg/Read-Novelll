@@ -1,0 +1,29 @@
+# ==============================================================================
+# DOCKER COMPOSE TEST — POSTGRESQL 16 + PGVECTOR
+# Dành riêng cho việc kiểm thử Migration DDL và Seed Data trên môi trường Local
+# ==============================================================================
+
+services:
+  postgres-test:
+    image: pgvector/pgvector:pg16
+    container_name: readnovel-pg16-test
+    restart: "no"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: passtest
+      POSTGRES_DB: readnovel_test
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - ./db/migrations/001_init_schema_v3_2.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+      - postgres_existing_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d readnovel_test"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  postgres_existing_data:
+    external: true
+    name: b7a1fb07d7580a222eed01e20e4e98774a8a54e4c0b7d5d196beee3ad01e04d7

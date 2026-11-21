@@ -1,0 +1,23 @@
+{% set previous = reader.navigation.previous %}
+{% set following = reader.navigation.next %}
+{% if previous and not (1 <= previous.chapter_sequence <= 2147483647) %}{% set previous = none %}{% endif %}
+{% if following and not (1 <= following.chapter_sequence <= 2147483647) %}{% set following = none %}{% endif %}
+<nav class="reader-navigation" aria-label="Điều hướng chương">
+  {% if previous %}
+  <a id="reader-previous-chapter" class="reader-navigation-control" rel="prev" href="{{ url_for('web_reader', slug=reader.novel.slug|urlencode, sequence=previous.chapter_sequence).path }}">
+  {% else %}
+  <span id="reader-previous-chapter" class="reader-navigation-control is-disabled" role="link" aria-disabled="true">
+  {% endif %}
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+    <span>Chương Trước</span>
+  {% if previous %}</a>{% else %}</span>{% endif %}
+  <button id="reader-toc-footer" class="reader-navigation-control" data-reader-toc-open type="button" aria-label="Mở mục lục chương" aria-controls="reader-toc" aria-expanded="false" disabled>Mục Lục</button>
+  {% if following %}
+  <a id="reader-next-chapter" class="reader-navigation-control" rel="next" href="{{ url_for('web_reader', slug=reader.novel.slug|urlencode, sequence=following.chapter_sequence).path }}">
+  {% else %}
+  <span id="reader-next-chapter" class="reader-navigation-control is-disabled" role="link" aria-disabled="true">
+  {% endif %}
+    <span>{% if following %}Chương Sau{% else %}Hết chương{% endif %}</span>
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+  {% if following %}</a>{% else %}</span>{% endif %}
+</nav>

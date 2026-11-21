@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}{{ reader.chapter.title }} — {{ reader.novel.title }}{% endblock %}
+{% block head %}
+  <script src="{{ url_for('static', path='/js/reader_preferences.js') }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static', path='/css/reader.css') }}">
+{% endblock %}
+{% block content %}
+<main class="reader-page" data-reader-theme="sepia"
+  data-novel-id="{{ reader.novel.id }}" data-chapter-id="{{ reader.chapter.id }}"
+  data-novel-slug="{{ reader.novel.slug }}" data-chapter-sequence="{{ reader.chapter.chapter_sequence }}"
+  data-chapter-number="{{ reader.chapter.chapter_number }}" data-chapter-title="{{ reader.chapter.title }}"
+  data-content-hash="{{ revision_hash }}" data-hash-scheme="{{ revision_scheme }}"
+  data-csrf-header="{{ csrf_header_name }}" data-csrf-cookie="{{ csrf_cookie_name }}"
+  {% if resume_candidate %}data-resume-candidate{% endif %}>
+  {% include "components/reader_toolbar.html" %}
+  {% include "components/reader_toc.html" %}
+  {% include "components/reader_guest_dialogs.html" %}
+  {% include "components/reader_bookmarks.html" %}
+  <article class="reader-container" aria-labelledby="reader-chapter-title">
+    <header class="reader-chapter-header">
+      <p class="reader-novel-title">{{ reader.novel.title }}</p>
+      <p class="reader-chapter-number">{% if not (reader.chapter.chapter_number|lower).startswith("chương ") %}Chương {% endif %}{{ reader.chapter.chapter_number }}</p>
+      <h1 id="reader-chapter-title">{{ reader.chapter.title }}</h1>
+      <div class="reader-resume" hidden>
+        <a data-reader-resume-link hidden>Đọc tiếp</a>
+        <button data-reader-resume-activate type="button" hidden>Lưu vị trí tại đây</button>
+        <p data-reader-resume-status role="status"></p>
+        <div class="reader-draft-actions" data-reader-resume-draft hidden>
+          <span data-reader-draft-position></span>
+          <button type="button" data-reader-draft-apply>Lưu vị trí chờ</button>
+          <button type="button" data-reader-draft-discard>Bỏ bản nháp</button>
+        </div>
+      </div>
+    </header>
+    <section class="reader-content" aria-label="Nội dung chương">
+      {% for paragraph in paragraphs %}<p>{{ paragraph }}</p>{% endfor %}
+    </section>
+    <div class="reader-completion" hidden>
+      <p data-reader-completion-status role="status"></p>
+      <button data-reader-completion-action type="button" aria-disabled="true">Đã đọc xong</button>
+      <button data-reader-completion-discard type="button" hidden>Bỏ xác nhận chờ</button>
+    </div>
+    {% include "components/reader_navigation.html" %}
+  </article>
+</main>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', path='/js/reader_offline.js') }}" defer></script>
+<script src="{{ url_for('static', path='/js/reader_completion.js') }}" defer></script>
+<script src="{{ url_for('static', path='/js/reader_guest_progress.js') }}" defer></script>
+<script src="{{ url_for('static', path='/js/reader_toc.js') }}" defer></script>
+<script src="{{ url_for('static', path='/js/reader_toolbar.js') }}" defer></script>
+<script src="{{ url_for('static', path='/js/reader_theme.js') }}" defer></script>
+<script src="{{ url_for('static', path='/js/reader_settings.js') }}" defer></script>
+<script src="{{ url_for('static', path='/js/reader_bookmarks.js') }}" defer></script>
+<script src="{{ url_for('static', path='/js/reader_resume.js') }}" defer></script>
+{% endblock %}

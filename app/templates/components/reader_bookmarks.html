@@ -1,0 +1,22 @@
+<dialog id="reader-bookmarks" class="reader-progress-dialog reader-bookmark-dialog"
+  aria-labelledby="reader-bookmarks-title">
+  <header class="reader-bookmark-dialog-header">
+    <div>
+      <h2 id="reader-bookmarks-title">Dấu trang</h2>
+      <p data-bookmarks-source></p>
+    </div>
+    <button type="button" class="reader-bookmark-close" data-bookmarks-close
+      aria-label="Đóng dấu trang" title="Đóng dấu trang" autofocus>
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2" stroke-linecap="round"><path d="m6 6 12 12M6 18 18 6"/></svg>
+    </button>
+  </header>
+  <p data-bookmarks-status role="status"></p>
+  <button type="button" data-bookmarks-retry hidden>Thử lại</button>
+  <ul class="reader-bookmark-items" data-bookmarks-items></ul>
+  <nav class="reader-bookmark-pagination" data-bookmarks-pagination aria-label="Trang dấu trang" hidden>
+    <button type="button" data-bookmarks-prev>Trước</button>
+    <span data-bookmarks-page aria-live="polite"></span>
+    <button type="button" data-bookmarks-next>Sau</button>
+  </nav>
+</dialog>

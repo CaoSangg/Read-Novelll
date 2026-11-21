@@ -1,0 +1,42 @@
+<noscript><p class="reader-toc-noscript">Bật JavaScript để mở mục lục chương.</p></noscript>
+<dialog id="reader-toc" class="reader-toc" aria-modal="true" aria-labelledby="reader-toc-title"
+  data-slug="{{ reader.novel.slug }}" data-sequence="{{ reader.chapter.chapter_sequence }}" data-initial-page="{{ toc_page }}"
+  data-next-sequence="{{ reader.navigation.next.chapter_sequence if reader.navigation.next else '' }}">
+  <div class="reader-toc-panel">
+    <header class="reader-toc-header">
+      <div><h2 id="reader-toc-title">Mục Lục Chương</h2><p id="reader-toc-total">Chương đã xuất bản</p></div>
+      <button id="reader-toc-close" type="button" aria-label="Đóng mục lục" autofocus>
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 6 12 12M6 18 18 6"/></svg>
+      </button>
+    </header>
+    <div id="reader-toc-browse" class="reader-toc-browse">
+    <p id="reader-toc-status" role="status" aria-live="polite"></p>
+    <button id="reader-toc-retry" type="button" hidden>Thử lại</button>
+    <ol id="reader-toc-list" class="reader-toc-list" aria-label="Danh sách chương" aria-busy="false"></ol>
+    <nav class="reader-toc-pagination" aria-label="Phân trang mục lục">
+      <p id="reader-toc-page" aria-live="polite"></p>
+      <div class="reader-toc-page-buttons">
+        <button type="button" data-toc-page="first" aria-label="Trang đầu" disabled>Đầu</button>
+        <button type="button" data-toc-page="previous" aria-label="Trang trước" disabled>Trước</button>
+        <button type="button" data-toc-page="next" aria-label="Trang tiếp" disabled>Tiếp</button>
+        <button type="button" data-toc-page="last" aria-label="Trang cuối" disabled>Cuối</button>
+      </div>
+      <form id="reader-toc-page-form">
+        <label for="reader-toc-page-input">Đến trang</label>
+        <input id="reader-toc-page-input" type="number" min="1" max="1" value="1" required disabled>
+        <button id="reader-toc-page-go" type="submit" disabled>Đến</button>
+      </form>
+    </nav>
+    </div>
+    <section id="reader-jump-confirmation" class="reader-jump-confirmation" hidden role="group"
+      aria-labelledby="reader-jump-title" aria-describedby="reader-jump-message">
+      <h3 id="reader-jump-title" aria-live="polite"></h3>
+      <p id="reader-jump-target"></p>
+      <p id="reader-jump-message">Bạn đang chọn một chương ở phía trước và có thể bỏ qua những chương chưa đọc. Bạn có muốn tiếp tục không?</p>
+      <div class="reader-jump-actions">
+        <button id="reader-jump-cancel" type="button">Ở lại</button>
+        <button id="reader-jump-continue" type="button">Tiếp tục đọc</button>
+      </div>
+    </section>
+  </div>
+</dialog>

@@ -1,0 +1,20 @@
+<details class="reader-account-menu" id="reader-account-menu" hidden>
+  <summary id="reader-account-trigger" aria-label="Tài khoản" title="Tài khoản"
+    aria-controls="reader-account-panel" aria-expanded="false">
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+      stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/></svg>
+  </summary>
+  <div id="reader-account-panel" class="reader-account-panel" role="region" aria-labelledby="reader-account-title">
+    <h2 id="reader-account-title">Tài khoản</h2>
+    <p data-reader-account-unknown>Chưa xác minh được phiên.</p>
+    <div data-reader-account-guest hidden>
+      <a href="/login?{{ reader_auth_query }}">Đăng nhập</a>
+      <a href="/register?{{ reader_auth_query }}">Đăng ký</a>
+    </div>
+    <div data-reader-account hidden>
+      <p data-reader-account-name></p>
+      <button id="reader-logout" type="button" data-reader-logout>Đăng xuất</button>
+    </div>
+    <p data-reader-logout-status role="status"></p>
+  </div>
+</details>

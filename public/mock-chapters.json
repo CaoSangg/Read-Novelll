@@ -1,0 +1,33 @@
+{
+  "novel": {
+    "id": "00000000-0000-0000-0000-000000000001",
+    "title": "Khấu Vấn Tiên Đạo",
+    "slug": "khau-van-tien-dao"
+  },
+  "chapters": [
+    {
+      "id": "00000000-0000-0000-0000-000000000011",
+      "novel_id": "00000000-0000-0000-0000-000000000001",
+      "chapter_sequence": 1,
+      "chapter_number": "Chương 1",
+      "title": "Khởi Đầu Gian Nan",
+      "content": "Mưa thu rả rích, gió lạnh thấu xương.\n\nBên trong miếu đổ nát ngoại thành, thiếu niên Tần Tang cuộn mình trong manh áo rách tả tơi, bờ môi tái nhợt vì đói rét. Trước ngực hắn, một miếng ngọc bội cổ xưa tản ra luồng hơi ấm mỏng manh như có như không, giữ lại tia sinh cơ cuối cùng trong đêm đông nghiệt ngã.\n\n\"Thế gian này thật sự có tiên nhân sao?\" - Tần Tang lẩm bẩm trong cơn mê sảng, hai mắt hướng về phía màn đêm vô tận. Hắn không biết rằng, chính miếng ngọc bội gia truyền này sắp sửa kéo hắn vào một thế giới kỳ bí ngập tràn nguy hiểm nhưng cũng đầy kỳ tích."
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000012",
+      "novel_id": "00000000-0000-0000-0000-000000000001",
+      "chapter_sequence": 2,
+      "chapter_number": "Chương 2",
+      "title": "Huyền Môn Bí Ký",
+      "content": "Trời vừa hửng sáng, một lão đạo sĩ áo xanh bước vào miếu hoang tránh mưa.\n\nLão đạo nhìn thấy miếng ngọc trước ngực Tần Tang, ánh mắt chợt lóe lên tia kinh ngạc: \"Cốt cách thanh kỳ, lại mang di vật của tông môn ta... Đứa trẻ này cùng lão đạo có phần duyên phận.\"\n\nTừ trong tay áo, lão đạo lấy ra một cuốn da thú ố vàng đặt bên cạnh Tần Tang, thản nhiên cất lời: \"Đây là Khấu Vấn Kinh, nếu ngươi có thể tự mình đả thông kinh mạch trong vòng ba tháng, lão đạo sẽ dẫn ngươi nhập môn.\""
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000013",
+      "novel_id": "00000000-0000-0000-0000-000000000001",
+      "chapter_sequence": 3,
+      "chapter_number": "Chương 3",
+      "title": "Ngưng Khí Tầng Đầu",
+      "content": "Trải qua ba mươi ngày đêm khổ tu không ngừng nghỉ theo khẩu quyết trong Cổ Thư, rốt cuộc vào một đêm trăng tròn, Tần Tang cảm nhận được một luồng nhiệt lưu tí hon tựa như sợi tóc lưu chuyển trong đan điền.\n\n\"Khí cảm! Đây chính là linh lực trong truyền thuyết!\"\n\nHắn mở bừng mắt, trong con ngươi tựa hồ có linh quang ẩn hiện. Con đường tu tiên đầy gian nan hiểm ác, từ giây phút này chính thức mở ra trước mắt thiếu niên."
+    }
+  ]
+}

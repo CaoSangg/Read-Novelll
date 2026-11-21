@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% from 'components/auth_icons.html' import icon %}
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', path='/css/auth.css') }}">
+{% endblock %}
+{% block content %}
+<main class="auth-page">
+  <section class="auth-card" aria-labelledby="auth-title">
+    <a class="auth-back" href="/">{{ icon('back') }}<span>Trở về Trang chủ</span></a>
+    <header class="auth-heading">
+      <div class="auth-emblem">{{ icon('user-plus' if mode == 'register' else 'book') }}</div>
+      <h1 id="auth-title">{{ 'Đăng Ký Tài Khoản' if mode == 'register' else 'Đăng Nhập' }}</h1>
+      <p>{{ 'Gia nhập cộng đồng độc giả' if mode == 'register' else 'Hãy đăng nhập để tiếp tục quá trình đọc truyện' }}</p>
+    </header>
+    <div id="auth-error" class="auth-message auth-error" role="alert" tabindex="-1" hidden></div>
+    <p id="auth-status" class="auth-message auth-success" role="status" aria-live="polite" hidden></p>
+    <noscript><p class="auth-message auth-error">Vui lòng bật JavaScript để đăng nhập hoặc đăng ký an toàn.</p></noscript>
+    <form id="auth-form" action="/api/auth/{{ mode }}" method="post" data-mode="{{ mode }}" data-csrf-header="{{ csrf_header_name }}" data-reader-return="{{ reader_return }}" aria-describedby="auth-error auth-status" novalidate>
+      {% if mode == 'register' %}
+      <div class="auth-field">
+        <label for="username">Tên tài khoản (Username)</label>
+        <div class="auth-input">{{ icon('user') }}<input id="username" name="username" type="text" required minlength="3" maxlength="50" pattern="[a-zA-Z0-9_.\-]+" autocomplete="username" placeholder="TanTang" aria-describedby="username-hint username-error"></div>
+        <p class="auth-hint" id="username-hint">3–50 ký tự: chữ Latin, số, dấu gạch dưới, chấm hoặc gạch ngang.</p>
+        <p class="auth-field-error" id="username-error" hidden></p>
+      </div>
+      {% endif %}
+      <div class="auth-field">
+        <label for="identifier">{{ 'Địa chỉ Email' if mode == 'register' else 'Tên tài khoản hoặc Email' }}</label>
+        <div class="auth-input">{{ icon('mail') }}<input id="identifier" name="{{ 'email' if mode == 'register' else 'username_or_email' }}" type="{{ 'email' if mode == 'register' else 'text' }}" required minlength="{{ 5 if mode == 'register' else 3 }}" maxlength="255" autocomplete="{{ 'email' if mode == 'register' else 'username' }}" placeholder="daohuu@tiendao.vn" aria-describedby="identifier-error"></div>
+        <p class="auth-field-error" id="identifier-error" hidden></p>
+      </div>
+      <div class="auth-field">
+        <label for="password">Mật khẩu{{ ' (8–128 ký tự)' if mode == 'register' else '' }}</label>
+        <div class="auth-input auth-password">{{ icon('lock') }}<input id="password" name="password" type="password" required minlength="{{ 8 if mode == 'register' else 1 }}" maxlength="128" autocomplete="{{ 'new-password' if mode == 'register' else 'current-password' }}" placeholder="••••••••" aria-describedby="password-error">
+          <button class="auth-toggle" type="button" aria-controls="password" aria-label="Hiện mật khẩu" aria-pressed="false" disabled>{{ icon('eye') }}<span class="auth-eye-slash" hidden></span></button>
+        </div>
+        <p class="auth-field-error" id="password-error" hidden></p>
+      </div>
+      {% if mode == 'register' %}
+      <div class="auth-field">
+        <label for="confirm-password">Xác nhận mật khẩu</label>
+        <div class="auth-input auth-password">{{ icon('lock') }}<input id="confirm-password" name="confirm_password" type="password" required maxlength="128" autocomplete="new-password" placeholder="••••••••" aria-describedby="confirm-password-error">
+          <button class="auth-toggle" type="button" aria-controls="confirm-password" aria-label="Hiện xác nhận mật khẩu" aria-pressed="false" disabled>{{ icon('eye') }}<span class="auth-eye-slash" hidden></span></button>
+        </div>
+        <p class="auth-field-error" id="confirm-password-error" hidden></p>
+      </div>
+      {% endif %}
+      <button id="auth-submit" class="auth-submit" type="submit" disabled><span class="auth-spinner" hidden aria-hidden="true"></span><span data-submit-label>{{ 'ĐĂNG KÝ' if mode == 'register' else 'ĐĂNG NHẬP' }}</span></button>
+    </form>
+    <footer class="auth-footer">
+      {{ 'Đã có tài khoản?' if mode == 'register' else 'Chưa có tài khoản?' }}
+      <a href="{{ '/login' if mode == 'register' else '/register' }}{{ reader_auth_query }}">{{ 'Đăng nhập ngay' if mode == 'register' else 'Đăng ký tài khoản ngay' }}</a>
+    </footer>
+  </section>
+</main>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', path='/js/auth.js') }}" defer></script>{% endblock %}

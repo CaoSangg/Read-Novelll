@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', path='/css/home.css') }}">
+{% endblock %}
+
+{% macro tooltip(title, hint) %}
+<span class="hitbox-tooltip-box" aria-hidden="true">
+  <span class="tooltip-card">
+    <span class="tooltip-header">
+      <span class="spirit-badge">TIÊN KHÍ</span>
+      <span class="spirit-rank">???????</span>
+    </span>
+    <span class="tooltip-title">
+      <span class="rune">❖</span> {{ title }} <span class="rune">❖</span>
+    </span>
+    <span class="tooltip-sub">{{ hint }}</span>
+  </span>
+</span>
+{% endmacro %}
+
+{% block content %}
+<main class="home-page" aria-label="Thư Phòng Tu Tiên" id="home-stage">
+  <div class="stage-box">
+    <img src="{{ url_for('static', path='/images/home_image.png') }}"
+         alt="Thư Phòng Tu Tiên" class="layer-img bg-layer" fetchpriority="high">
+
+    <a href="{{ read_url }}" class="hitbox-area hitbox-tome"
+       aria-label="Bắt đầu đọc — Cổ Thư Vô Danh">
+      {{ tooltip('CỔ THƯ VÔ DANH', '« Nhấp để đọc truyện »') }}
+    </a>
+    <button type="button" class="hitbox-area hitbox-buddha" data-modal-open="buddha"
+            aria-label="NGỌC PHẬT" aria-haspopup="dialog" aria-controls="modal-buddha">
+      {{ tooltip('NGỌC PHẬT', '« Nhấp ????? »') }}
+    </button>
+    <button type="button" class="hitbox-area hitbox-map" data-modal-open="map"
+            aria-label="CỬU CHÂU SƠN HÀ ĐỒ" aria-haspopup="dialog" aria-controls="modal-map">
+      {{ tooltip('CỬU CHÂU SƠN HÀ ĐỒ', '« Nhấp ????? »') }}
+    </button>
+
+    <img src="{{ url_for('static', path='/images/sub_image1.png') }}"
+         alt="Cổ Thư" class="layer-img sprite-layer sprite-tome" aria-hidden="true">
+    <img src="{{ url_for('static', path='/images/sub_image2.png') }}"
+         alt="Ngọc Phật" class="layer-img sprite-layer sprite-buddha" aria-hidden="true">
+    <img src="{{ url_for('static', path='/images/sub_image3.png') }}"
+         alt="Sơn Hà Đồ" class="layer-img sprite-layer sprite-map" aria-hidden="true">
+    <canvas id="particles-canvas" aria-hidden="true"></canvas>
+  </div>
+</main>
+
+{# Keep the literal Next.js modal copy, including its existing question marks. #}
+{% for key, title, button_text in [
+  ('buddha', 'NGỌC PHẬT', '???????????????'),
+  ('map', 'CỬU CHÂU SƠN HÀ ĐỒ', 'Trở về')
+] %}
+<div class="modal-overlay" id="modal-{{ key }}" hidden>
+  <section class="modal-box" role="dialog" aria-modal="true"
+           aria-labelledby="modal-title-{{ key }}" aria-describedby="modal-desc-{{ key }}"
+           tabindex="-1">
+    <button type="button" class="modal-x" data-modal-close aria-label="Đóng hộp thoại">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+           stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <path d="m6 6 12 12M18 6 6 18"/>
+      </svg>
+    </button>
+    <h3 id="modal-title-{{ key }}">{{ title }}</h3>
+    <p id="modal-desc-{{ key }}">??????????????</p>
+    <button type="button" class="modal-btn" data-modal-close>{{ button_text }}</button>
+    <button type="button" class="modal-close" data-modal-close>Đóng</button>
+  </section>
+</div>
+{% endfor %}
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', path='/js/home.js') }}" defer></script>
+{% endblock %}

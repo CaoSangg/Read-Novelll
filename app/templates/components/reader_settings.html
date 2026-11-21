@@ -1,0 +1,66 @@
+<details class="reader-theme-selector" id="reader-theme-selector" hidden>
+  <summary id="reader-theme-trigger" aria-label="Cài đặt đọc" aria-controls="reader-theme-panel" aria-expanded="false" title="Cài đặt đọc">
+    <!-- Lucide Settings, lucide-react v0.475.0 (ISC).
+    Copyright (c) for portions of Lucide are held by Cole Bemis 2013-2022 as part of Feather (MIT). All other copyright (c) for Lucide are held by Lucide Contributors 2022.
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose with or without fee is hereby granted, provided that the above
+    copyright notice and this permission notice appear in all copies.
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+    WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+    MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+    ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+    WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+    ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+    OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+    -->
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+  </summary>
+  <div id="reader-theme-panel" class="reader-theme-panel" role="region" aria-labelledby="reader-settings-title">
+    <h2 id="reader-settings-title">Cài đặt đọc</h2>
+    <fieldset class="reader-settings-group">
+      <legend>Màu đọc</legend>
+      <div class="reader-settings-options">
+        <label title="Giấy (Sepia)"><input type="radio" name="reader-theme" value="sepia" aria-label="Ấm (Sepia)" checked><span class="reader-option-text">Ấm</span></label>
+        <label title="Light"><input type="radio" name="reader-theme" value="light" aria-label="Sáng (Light)"><span class="reader-option-text">Sáng</span></label>
+        <label title="Dark"><input type="radio" name="reader-theme" value="dark" aria-label="Tối (Dark)"><span class="reader-option-text">Tối</span></label>
+      </div>
+    </fieldset>
+    <div id="reader-typography-controls" hidden>
+      <fieldset class="reader-settings-group">
+        <legend>Phông chữ</legend>
+        <div class="reader-settings-options reader-font-options">
+          <label><input type="radio" name="reader-font-family" value="Lora" checked><span class="reader-option-text">Lora</span></label>
+          <label><input type="radio" name="reader-font-family" value="Merriweather"><span class="reader-option-text">Merriweather</span></label>
+          <label><input type="radio" name="reader-font-family" value="Roboto"><span class="reader-option-text">Roboto</span></label>
+        </div>
+      </fieldset>
+      <fieldset class="reader-settings-group">
+        <legend>Cỡ chữ <output id="reader-font-size-value" aria-live="polite">19px</output></legend>
+        <div class="reader-font-size-actions">
+          <button id="reader-font-size-decrease" type="button" data-reader-size-step="-1" aria-label="Giảm cỡ chữ" aria-describedby="reader-font-size-value">A −</button>
+          <button id="reader-font-size-increase" type="button" data-reader-size-step="1" aria-label="Tăng cỡ chữ" aria-describedby="reader-font-size-value">A +</button>
+        </div>
+      </fieldset>
+      <fieldset class="reader-settings-group">
+        <legend>Khoảng cách dòng <output id="reader-line-height-value" aria-live="polite">1.85</output></legend>
+        <div class="reader-settings-options">
+          <label><input type="radio" name="reader-line-height" value="1.65"><span class="reader-option-text">Gọn</span></label>
+          <label><input type="radio" name="reader-line-height" value="1.85" checked><span class="reader-option-text">Chuẩn</span></label>
+          <label><input type="radio" name="reader-line-height" value="2.1"><span class="reader-option-text">Thoáng</span></label>
+        </div>
+      </fieldset>
+      <fieldset class="reader-settings-group">
+        <legend>Độ rộng trang</legend>
+        <div class="reader-settings-options reader-width-options">
+          <label><input type="radio" name="reader-reading-width" value="normal" checked><span class="reader-option-text">Tối ưu mắt</span></label>
+          <label><input type="radio" name="reader-reading-width" value="wide"><span class="reader-option-text">Rộng</span></label>
+        </div>
+      </fieldset>
+    </div>
+    <section class="reader-settings-group reader-progress-settings" data-reader-progress-settings hidden>
+      <h3>Quản lý tiến độ</h3>
+      <button data-reader-guest-clear type="button" aria-haspopup="dialog"
+        aria-controls="reader-guest-clear">Xóa tiến độ trên thiết bị</button>
+    </section>
+  </div>
+</details>

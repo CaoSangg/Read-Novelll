@@ -1,0 +1,28 @@
+<header id="reader-toolbar" class="reader-toolbar" aria-label="Thanh công cụ đọc truyện">
+  <nav class="reader-toolbar-actions reader-toolbar-start" aria-label="Điều khiển Reader">
+    <a class="reader-toolbar-home" href="/" aria-label="Trở về Thư Phòng" title="Trở về Thư Phòng">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg>
+    </a>
+    <button id="reader-toc-open" class="reader-toc-open" data-reader-toc-open type="button" aria-label="Mở mục lục chương" aria-expanded="false" aria-controls="reader-toc" disabled>
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      <span class="reader-toolbar-toc-label">Mục Lục</span>
+    </button>
+  </nav>
+  <span class="reader-toolbar-title" title="S-ReadNovel">S-ReadNovel</span>
+  <div class="reader-toolbar-actions reader-toolbar-end">
+    <button id="reader-bookmark-toggle" class="reader-bookmark-tool" type="button"
+      aria-label="Đánh dấu chương này" title="Đánh dấu chương này" aria-disabled="true" disabled>
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12v16l-6-4-6 4z"/></svg>
+    </button>
+    <button id="reader-bookmarks-open" class="reader-bookmark-tool" type="button"
+      aria-label="Mở danh sách dấu trang" title="Danh sách dấu trang" aria-disabled="true"
+      aria-haspopup="dialog" aria-controls="reader-bookmarks" aria-expanded="false" disabled>
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h7v14l-3.5-2.5L4 19V5zM15 6h5m-5 6h5m-5 6h5"/></svg>
+    </button>
+    {% include "components/reader_account.html" %}
+    {% include "components/reader_settings.html" %}
+  </div>
+  <span id="reader-bookmark-feedback" class="reader-bookmark-feedback" role="status"></span>
+</header>

@@ -11,6 +11,7 @@ concurrency:
 
 jobs:
   deploy-preview:
+    if: github.ref != 'refs/heads/feature/aws-migration'
     name: Deploy Preview len Vercel
     runs-on: ubuntu-latest
     steps:
