@@ -1,0 +1,55 @@
+name: readnovel-step5-local
+
+services:
+  app:
+    build:
+      context: .
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      ENVIRONMENT: development
+      ALLOWED_HOSTS: "localhost,127.0.0.1"
+      ALLOWED_ORIGINS: "http://localhost:8000,http://127.0.0.1:8000"
+      TRUSTED_PROXIES: ""
+      DATABASE_URL: "postgresql://readnovel@db:5432/readnovel_local?connect_timeout=3"
+      PGPASSWORD: ${READNOVEL_LOCAL_DB_PASSWORD:?Set READNOVEL_LOCAL_DB_PASSWORD in the local env file}
+      SECRET_KEY: ${READNOVEL_LOCAL_SECRET_KEY:?Set READNOVEL_LOCAL_SECRET_KEY in the local env file}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - frontend
+      - data
+
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: readnovel
+      POSTGRES_DB: readnovel_local
+      POSTGRES_PASSWORD: ${READNOVEL_LOCAL_DB_PASSWORD:?Set READNOVEL_LOCAL_DB_PASSWORD in the local env file}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/migrations:/readnovel/migrations:ro
+      - ./db/seeds:/readnovel/seeds:ro
+      - ./db/compose-init/00-bootstrap.sql:/docker-entrypoint-initdb.d/00-bootstrap.sql:ro
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          test "$$(PGPASSWORD="$$POSTGRES_PASSWORD" PGCONNECT_TIMEOUT=2
+          psql -X -h 127.0.0.1 -U "$$POSTGRES_USER" -d "$$POSTGRES_DB" -Atq
+          -c 'SELECT version FROM public.readnovel_local_bootstrap WHERE version = 4')" = 4
+      interval: 3s
+      timeout: 5s
+      retries: 15
+      start_period: 20s
+    networks:
+      - data
+
+networks:
+  frontend:
+  data:
+    internal: true
+
+volumes:
+  pgdata:

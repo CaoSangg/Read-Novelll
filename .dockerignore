@@ -1,0 +1,28 @@
+# Allow only files the FastAPI build consumes.
+**
+!Dockerfile
+!requirements.txt
+!app/
+!app/**
+
+# Keep generated files and sensitive material out even under app/.
+**/__pycache__/
+**/*.py[cod]
+**/.pytest_cache/
+**/.ruff_cache/
+**/.env
+**/.env.*
+**/*.env
+**/*.key
+**/*.pem
+**/*.p12
+**/*.pfx
+**/.aws/
+**/credentials
+**/credentials.*
+**/*.dump
+**/*.bak
+**/*.backup
+**/*.sql
+**/*.sql.gz
+**/*.log

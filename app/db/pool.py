@@ -210,16 +210,14 @@ async def check_database_readiness() -> tuple[bool, float, str | None]:
 
     start_time = time.perf_counter()
     try:
-        async with get_db_connection() as conn:
-            async with conn.cursor() as cur:
-                await cur.execute("SELECT 1;")
-                await cur.fetchone()
+        # Bound both pool acquisition and a stalled query on an existing connection.
+        async with asyncio.timeout(3):
+            async with get_db_connection() as conn:
+                async with conn.cursor() as cur:
+                    await cur.execute("SELECT 1;")
+                    await cur.fetchone()
         latency_ms = (time.perf_counter() - start_time) * 1000
         return True, round(latency_ms, 2), None
-    except Exception as e:
-        # Sanitize error message to avoid leaking any sensitive info
-        err_type = type(e).__name__
-        err_msg = str(e)
-        if "@" in err_msg or "password" in err_msg.lower():
-            err_msg = mask_database_url(err_msg)
-        return False, 0.0, f"{err_type}: {err_msg[:120]}"
+    except Exception as error:
+        logger.warning("Database readiness probe failed: %s", type(error).__name__)
+        return False, 0.0, "Database connection failed"
