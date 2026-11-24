@@ -1,0 +1,189 @@
+name: FastAPI CI
+
+on:
+  push:
+    branches: [feature/aws-migration]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  lint:
+    name: Python lint and format
+    if: >-
+      github.event_name == 'push' ||
+      (github.head_ref == 'feature/aws-migration' &&
+       github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Install Ruff
+        run: python -m pip install ruff==0.17.5
+      - name: Check lint and format
+        run: |
+          python -m ruff check app tests
+          python -m ruff format --check app tests
+
+  integration:
+    name: Python tests with PostgreSQL
+    if: >-
+      github.event_name == 'push' ||
+      (github.head_ref == 'feature/aws-migration' &&
+       github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Install Python test dependencies
+        run: python -m pip install -r requirements.txt pytest pytest-asyncio httpx
+      - name: Bootstrap disposable PostgreSQL and run pytest
+        run: |
+          READNOVEL_LOCAL_DB_PASSWORD=$(openssl rand -hex 32)
+          READNOVEL_LOCAL_SECRET_KEY=$(openssl rand -hex 32)
+          printf '::add-mask::%s\n' "$READNOVEL_LOCAL_DB_PASSWORD" "$READNOVEL_LOCAL_SECRET_KEY"
+          export READNOVEL_LOCAL_DB_PASSWORD READNOVEL_LOCAL_SECRET_KEY
+          export PGPASSWORD="$READNOVEL_LOCAL_DB_PASSWORD"
+          export SECRET_KEY="$READNOVEL_LOCAL_SECRET_KEY" ENVIRONMENT=development
+
+          # The verifier requires a read-only audit source named readnovel_test on loopback.
+          override="$RUNNER_TEMP/readnovel-integration.yaml"
+          cat > "$override" <<'YAML'
+          services:
+            db:
+              environment:
+                POSTGRES_DB: readnovel_test
+              ports:
+                - '127.0.0.1::5432'
+          networks:
+            data:
+              internal: false
+          YAML
+          project="readnovel-ci-pg-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          compose=(docker compose -p "$project" -f docker-compose.local.yml -f "$override")
+          stop_stack() { "${compose[@]}" stop; }
+          trap stop_stack EXIT
+          # Compose waits for Step 5's migration 004 marker via its DB healthcheck.
+          "${compose[@]}" up -d --wait --wait-timeout 120 db
+          binding=$("${compose[@]}" port db 5432)
+          if ! [[ "$binding" =~ ^127\.0\.0\.1:[0-9]+$ ]]; then
+            echo 'Expected a loopback-only PostgreSQL port.' >&2
+            exit 1
+          fi
+          export DATABASE_URL="postgresql://readnovel@$binding/readnovel_test?connect_timeout=3"
+          export PYTEST_JUNIT_XML="$RUNNER_TEMP/readnovel-pytest.xml"
+          export PYTEST_ADDOPTS="--junitxml=$PYTEST_JUNIT_XML"
+          python -m scripts.check_progress_migration --verify
+          python - <<'PY'
+          import os
+          import xml.etree.ElementTree as ET
+
+          report = ET.parse(os.environ['PYTEST_JUNIT_XML'])
+          cases = list(report.iter('testcase'))
+          if not cases or any(case.find('skipped') is not None for case in cases):
+              raise SystemExit('Expected a nonempty pytest run with zero skipped tests.')
+          PY
+
+  javascript:
+    name: Reader JavaScript tests
+    if: >-
+      github.event_name == 'push' ||
+      (github.head_ref == 'feature/aws-migration' &&
+       github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Run Node test suite
+        run: node --test 'tests/**/*.test.cjs'
+
+  docker-arm64:
+    name: Docker ARM64 build and HTTP smoke
+    if: >-
+      github.event_name == 'push' ||
+      (github.head_ref == 'feature/aws-migration' &&
+       github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
+        with:
+          platforms: arm64
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - name: Build and load ARM64 image
+        run: docker buildx build --platform linux/arm64 --load --tag readnovel-ci-arm64:local .
+      - name: Verify image architecture and configured user
+        run: |
+          metadata=$(docker image inspect readnovel-ci-arm64:local \
+            --format '{{.Os}}/{{.Architecture}} {{.Config.User}}')
+          test "$metadata" = 'linux/arm64 appuser'
+          echo "$metadata"
+      - name: Start ARM64 app and verify HTTP health with PostgreSQL
+        run: |
+          READNOVEL_LOCAL_DB_PASSWORD=$(openssl rand -hex 32)
+          READNOVEL_LOCAL_SECRET_KEY=$(openssl rand -hex 32)
+          printf '::add-mask::%s\n' "$READNOVEL_LOCAL_DB_PASSWORD" "$READNOVEL_LOCAL_SECRET_KEY"
+          export READNOVEL_LOCAL_DB_PASSWORD READNOVEL_LOCAL_SECRET_KEY
+
+          override="$RUNNER_TEMP/readnovel-arm64.yaml"
+          cat > "$override" <<'YAML'
+          services:
+            app:
+              image: readnovel-ci-arm64:local
+              platform: linux/arm64
+              pull_policy: never
+          YAML
+          project="readnovel-ci-arm-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          compose=(docker compose -p "$project" -f docker-compose.local.yml -f "$override")
+          stop_stack() { "${compose[@]}" stop; }
+          trap stop_stack EXIT
+          "${compose[@]}" up -d --no-build
+
+          # Probe from the runner rather than starting a Python probe under emulation.
+          deadline=$((SECONDS + 120))
+          for path in /api/health /api/health/readiness; do
+            until status=$(curl --silent --noproxy 127.0.0.1 --max-time 5 \
+              --output /dev/null --write-out '%{http_code}' "http://127.0.0.1:8000$path") \
+              && [[ "$status" == 200 ]]; do
+              if (( SECONDS >= deadline )); then
+                echo "$path did not return HTTP 200 (last status: ${status:-unavailable})." >&2
+                exit 1
+              fi
+              sleep 1
+            done
+            echo "$path HTTP $status"
+          done
+
+          test "$("${compose[@]}" exec -T app uname -m)" = aarch64
+          test "$("${compose[@]}" exec -T app id -un)" = appuser
+          test "$("${compose[@]}" exec -T app id -u)" -gt 0
+          echo 'ARM64 runtime started as a non-root user.'

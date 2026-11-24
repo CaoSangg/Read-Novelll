@@ -9,9 +9,16 @@ on:
       - "fix/**"
       - "hotfix/**"
 
+permissions:
+  contents: read
+
 jobs:
   kiem-tra-chat-luong:
-    if: github.ref != 'refs/heads/feature/aws-migration'
+    if: >-
+      github.ref != 'refs/heads/feature/aws-migration' &&
+      (github.event_name != 'pull_request' ||
+       github.head_ref != 'feature/aws-migration' ||
+       github.event.pull_request.head.repo.full_name != github.repository)
     name: Kiem Tra Next.js Lint & Build
     runs-on: ubuntu-latest
     steps:
@@ -39,8 +46,8 @@ jobs:
       - name: Xuat bao cao kiem tra ra GitHub Step Summary
         if: always()
         run: |
-          echo "### 🔍 Ket qua CI Quality Gate Check" >> $GITHUB_STEP_SUMMARY
-          echo "- **Trang thai:** ${{ job.status == 'success' && 'Thanh cong ✅' || 'That bai ❌' }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Nhanh (Branch):** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "Ket qua CI Quality Gate Check" >> $GITHUB_STEP_SUMMARY
+          echo "- **Trang thai:** ${{ job.status == 'success' && 'Thanh cong' || 'That bai' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Nhanh:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- **Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- **Kiem tra:** Linting & Next.js Build pass hoàn tất" >> $GITHUB_STEP_SUMMARY
